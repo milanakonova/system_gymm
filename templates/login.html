@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-dumbbell"></i> Фитнес-центр "Сила"</h1>
+        </header>
+        
+        <div class="login-container">
+            <h2>Вход в систему</h2>
+            <form id="loginForm" onsubmit="loginUser(event)">
+                <input type="text" id="username" placeholder="Email / логин / телефон" required>
+                <input type="password" id="password" placeholder="Пароль" required>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p>Нет аккаунта? <a href="/" style="color: #4f46e5;">Зарегистрироваться</a></p>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>© 2025 Фитнес-центр "Сила". Все права защищены.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // На случай если где-то остался старый alert() — глушим системные диалоги на странице логина
+        window.alert = function () {};
+    </script>
+    <script src="/static/js/app_v2.js?v=20251218"></script>
+</body>
+</html>
+

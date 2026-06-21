@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYM Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-dumbbell"></i> Фитнес-центр "Сила"</h1>
+            <p class="subtitle">Система управления тренажерным залом</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="hero">
+                <h2>Добро пожаловать!</h2>
+                <p>Профессиональная система управления фитнес-центром</p>
+                
+                <div class="auth-buttons">
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Войти в систему
+                    </a>
+                    <button onclick="showRegister()" class="btn btn-secondary">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </button>
+                </div>
+            </div>
+            
+            <div class="features">
+                <h3>Возможности системы:</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h4>Управление клиентами</h4>
+                        <p>Регистрация, абонементы, история посещений</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h4>Расписание занятий</h4>
+                        <p>Планирование тренировок и групповых занятий</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Аналитика и отчеты</h4>
+                        <p>Статистика посещаемости и финансовые отчеты</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h4>Управление платежами</h4>
+                        <p>Обработка оплат, чеки, контроль задолженностей</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>© 2025 Фитнес-центр "Сила". Все права защищены.</p>
+        </footer>
+    </div>
+    
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm" onsubmit="registerUser(event)">
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="tel" id="regPhone" placeholder="Телефон" required>
+                <input type="password" id="regPassword" placeholder="Пароль" required>
+                <input type="text" id="regFullName" placeholder="ФИО (Имя Фамилия Отчество)" required>
+                <select id="regRole" required>
+                    <option value="client">Клиент</option>
+                    <option value="trainer">Тренер</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/static/js/app_v2.js?v=20251218"></script>
+</body>
+</html>
+

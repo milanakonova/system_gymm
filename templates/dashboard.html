@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/datepicker.css?v=20251218">
+</head>
+<body onload="loadDashboard()">
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 id="userName">Загрузка...</h3>
+                    <p id="userRole"></p>
+                </div>
+                
+                <div class="nav-menu">
+                    <div class="nav-item active" onclick="showSection('profile')">
+                        <i class="fas fa-user"></i> Профиль
+                    </div>
+                    <div class="nav-item" onclick="showSection('schedule')">
+                        <i class="fas fa-calendar-alt"></i> Расписание
+                    </div>
+                    <div class="nav-item" onclick="showSection('subscriptions')">
+                        <i class="fas fa-id-card"></i> Абонементы
+                    </div>
+                    <div class="nav-item" onclick="showSection('visits')">
+                        <i class="fas fa-history"></i> История посещений
+                    </div>
+                    <div class="nav-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <div id="profileSection" class="section active">
+                    <h2>Мой профиль</h2>
+                    <div id="profileContent">
+                        <p>Загрузка данных профиля...</p>
+                    </div>
+                </div>
+                
+                <div id="scheduleSection" class="section">
+                    <h2>Расписание занятий</h2>
+                    <div class="schedule-controls">
+                        <button onclick="loadSchedule()" class="btn btn-primary">
+                            <i class="fas fa-sync"></i> Обновить
+                        </button>
+                        <input type="text" id="scheduleDate" data-datepicker="1" placeholder="YYYY-MM-DD" inputmode="numeric" onchange="loadSchedule()">
+                        <select id="scheduleLocation" onchange="loadSchedule()">
+                            <option value="">Все залы</option>
+                        </select>
+                        <button id="trainerAddBtn" onclick="openTrainerCreate()" class="btn btn-secondary" style="display:none;">
+                            <i class="fas fa-plus"></i> Добавить запись
+                        </button>
+                    </div>
+                    <div id="trainerCreatePanel" style="display:none; margin-top: 12px; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h3 style="margin-top:0;">Новая запись</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <div>
+                                <label>Дата</label><br>
+                                <input type="text" id="trainerSessionDate" data-datepicker="1" placeholder="YYYY-MM-DD" inputmode="numeric">
+                            </div>
+                            <div>
+                                <label>С</label><br>
+                                <input type="time" id="trainerStartTime">
+                            </div>
+                            <div>
+                                <label>До</label><br>
+                                <input type="time" id="trainerEndTime">
+                            </div>
+                            <div>
+                                <label>Зал</label><br>
+                                <select id="trainerZoneSelect">
+                                    <option value="">Выберите зал</option>
+                                </select>
+                            </div>
+                            <div style="align-self:flex-end;">
+                                <button onclick="createTrainerSession()" class="btn btn-primary">Создать</button>
+                                <button onclick="closeTrainerCreate()" class="btn btn-secondary">Отмена</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="scheduleContent">
+                        <div class="schedule-grid" id="scheduleGrid">
+                            <p>Загрузка расписания...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="subscriptionsSection" class="section">
+                    <h2>Мои абонементы</h2>
+                    <div id="subscriptionsContent">
+                        <p>Загрузка абонементов...</p>
+                    </div>
+                </div>
+                
+                <div id="visitsSection" class="section">
+                    <h2>История посещений</h2>
+                    <div id="visitsContent">
+                        <p>Загрузка истории...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/app_v2.js?v=20251218"></script>
+    <script src="/static/js/datepicker.js?v=20251218"></script>
+    <script>
+        function showToast(message, isError = false) {
+            let el = document.getElementById('toast');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'toast';
+                el.style.position = 'fixed';
+                el.style.top = '16px';
+                el.style.right = '16px';
+                el.style.maxWidth = '340px';
+                el.style.padding = '12px 14px';
+                el.style.borderRadius = '10px';
+                el.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
+                el.style.zIndex = '9999';
+                el.style.display = 'none';
+                el.style.color = '#fff';
+                document.body.appendChild(el);
+            }
+            el.style.background = isError ? '#dc2626' : '#16a34a';
+            el.textContent = message;
+            el.style.display = 'block';
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                el.style.display = 'none';
+            }, 2200);
+        }
+
+        function isValidDateString(s) {
+            return /^\d{4}-\d{2}-\d{2}$/.test(s);
+        }
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById(sectionId + 'Section').classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+        }
+        
+        async function loadPasses() {
+            const token = localStorage.getItem('access_token');
+            const container = document.getElementById('subscriptionsContent');
+            if (!container) return;
+
+            try {
+                const response = await fetch('/api/passes/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    container.innerHTML = `<p>Ошибка: ${err.detail || 'Не удалось загрузить абонементы'}</p>`;
+                    return;
+                }
+                const passes = await response.json();
+                if (!passes || passes.length === 0) {
+                    container.innerHTML = '<p>Абонементы не найдены</p>';
+                    return;
+                }
+
+                let html = '<div class="feature-grid">';
+                passes.forEach(p => {
+                    html += `
+                    <div class="feature-card">
+                        <h3>${p.zone_name}</h3>
+                        <p>Осталось посещений: <strong>${p.remaining_visits}</strong></p>
+                        <button class="btn btn-primary" onclick="topupPass(${p.gym_zone_id})">
+                            <i class="fas fa-plus"></i> Пополнить (+5)
+                        </button>
+                    </div>`;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = '<p>Ошибка загрузки абонементов</p>';
+            }
+        }
+
+        async function topupPass(gymZoneId) {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch(`/api/passes/me/${gymZoneId}/topup`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (response.ok && data.confirmation_url) {
+                    window.location.href = data.confirmation_url;
+                } else {
+                    showToast(data.detail || 'Не удалось пополнить', true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка пополнения', true);
+            }
+        }
+        
+        async function loadUserProfile(user) {
+            const profileContent = document.getElementById('profileContent');
+            const fullName = user.first_name && user.last_name 
+                ? `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.trim()
+                : user.email;
+            profileContent.innerHTML = `
+                <div class="profile-info">
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>ФИО:</strong> ${fullName || 'Не указано'}</p>
+                    <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
+                    <p><strong>Роль:</strong> ${user.role}</p>
+                    <p><strong>Статус:</strong> ${user.is_active ? 'Активен' : 'Неактивен'}</p>
+                </div>
+            `;
+        }
+        
+        async function loadDashboard() {
+            const user = await getCurrentUser();
+            if (!user) return;
+            
+            const fullName = user.first_name && user.last_name 
+                ? `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.trim()
+                : user.email;
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('userRole').textContent = user.role;
+            
+            await loadUserProfile(user);
+            
+            if (user.role === 'client') {
+                await loadClientDashboard(user);
+                await loadMyVisits();
+                await loadZones();
+                await loadSchedule();
+                await loadPasses();
+            } else if (user.role === 'trainer') {
+                await loadZones();
+                document.getElementById('trainerAddBtn').style.display = 'inline-flex';
+                await loadSchedule();
+                await loadMyVisits();
+                // У тренера вкладки абонементов быть не должно
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    if (item.textContent && item.textContent.includes('Абонементы')) {
+                        item.style.display = 'none';
+                    }
+                });
+                const subsSection = document.getElementById('subscriptionsSection');
+                if (subsSection) subsSection.style.display = 'none';
+            }
+        }
+        
+        async function loadMyVisits() {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch('/api/attendance/me/history', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayVisits(data.history);
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке истории:', error);
+            }
+        }
+        
+        function displayVisits(visits) {
+            const visitsContent = document.getElementById('visitsContent');
+            if (!visitsContent) return;
+            
+            if (visits.length === 0) {
+                visitsContent.innerHTML = '<p>История посещений пуста</p>';
+                return;
+            }
+            
+            let html = '';
+            visits.forEach(visit => {
+                const checkIn = new Date(visit.check_in_time);
+                const checkOut = visit.check_out_time ? new Date(visit.check_out_time) : null;
+                
+                html += `
+                <div class="visit-card">
+                    <p class="visit-time">
+                        ${checkIn.toLocaleDateString()} ${checkIn.toLocaleTimeString()}
+                        <span class="visit-method ${visit.method}">${visit.method}</span>
+                    </p>
+                    ${visit.client_name ? `<p><strong>Клиент:</strong> ${visit.client_name}</p>` : ''}
+                    ${typeof visit.participants_count === 'number' ? `<p><strong>Записано клиентов:</strong> ${visit.participants_count}</p>` : ''}
+                    ${Array.isArray(visit.clients) && visit.clients.length ? `<p><strong>Клиенты:</strong><br>${visit.clients.map(n => `${n}`).join('<br>')}</p>` : ''}
+                    <p>Вход: ${checkIn.toLocaleTimeString()}</p>
+                    ${checkOut ? `<p>Выход: ${checkOut.toLocaleTimeString()}</p>` : '<p>Выход: еще внутри</p>'}
+                </div>
+                `;
+            });
+            
+            visitsContent.innerHTML = html;
+        }
+        
+        async function loadSchedule() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+
+            const user = await getCurrentUser();
+            if (!user) return;
+
+            const dateInput = document.getElementById('scheduleDate');
+            const locationSelect = document.getElementById('scheduleLocation');
+
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            if (dateInput && dateInput.value && !isValidDateString(dateInput.value)) {
+                showToast('Введите дату в формате YYYY-MM-DD', true);
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('session_date', dateInput.value);
+            if (locationSelect && locationSelect.value) {
+                params.append('gym_zone_id', locationSelect.value);
+            }
+
+            try {
+                const response = await fetch(`/api/schedule?${params.toString()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    console.error('Error loading schedule:', err);
+                    const scheduleGrid = document.getElementById('scheduleGrid');
+                    if (scheduleGrid) {
+                        scheduleGrid.innerHTML = `<p class="error">Ошибка загрузки расписания: ${err.detail || 'Неизвестная ошибка'}</p>`;
+                    } else {
+                        showToast(err.detail || 'Ошибка загрузки расписания', true);
+                    }
+                    return;
+                }
+                const sessions = await response.json();
+                displayScheduleSessions(sessions, user);
+            } catch (e) {
+                console.error('Ошибка при загрузке расписания:', e);
+            }
+        }
+        
+        function displayScheduleSessions(sessions, user) {
+            const scheduleGrid = document.getElementById('scheduleGrid');
+            if (!scheduleGrid) return;
+
+            console.log('Loading sessions:', sessions); // Отладочный вывод
+
+            if (!sessions || sessions.length === 0) {
+                scheduleGrid.innerHTML = '<p class="no-data">На выбранную дату записей нет</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            sessions.forEach(s => {
+                const timeStr = `${s.start_time} - ${s.end_time}`;
+                const trainerName = `${s.trainer.first_name} ${s.trainer.last_name}`;
+                const zoneName = s.gym_zone ? s.gym_zone.name : 'Зал не указан';
+                const count = s.participants_count || 0;
+
+                // Проверяем, прошло ли время занятия
+                let isSessionPassed = false;
+                try {
+                    const sessionDateTime = new Date(`${s.session_date}T${s.end_time}`);
+                    const now = new Date();
+                    isSessionPassed = !isNaN(sessionDateTime.getTime()) && sessionDateTime < now;
+                } catch (e) {
+                    console.error('Error parsing session time:', e);
+                }
+
+                const isCancelled = s.is_cancelled;
+                const isCompleted = s.is_completed;
+                let cardStyle = 'border: 1px solid #ddd;';
+
+                if (isCancelled) {
+                    cardStyle = 'border: 2px solid #dc2626; background-color: #fef2f2; opacity: 0.7;';
+                } else if (isCompleted) {
+                    cardStyle = 'border: 2px solid #16a34a; background-color: #f0fdf4; opacity: 0.8;';
+                } else if (isSessionPassed && s.participants_count > 0) {
+                    cardStyle = 'border: 2px solid #f59e0b; background-color: #fef3c7;';
+                }
+
+                html += `
+                <div class="workout-card" style="${cardStyle} padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                    <div class="workout-header">
+                        <h3 style="${isCancelled ? 'text-decoration: line-through;' : ''}">${trainerName}</h3>
+                        <span class="workout-time" style="${isCancelled ? 'text-decoration: line-through;' : ''}">${timeStr}</span>
+                        ${isCancelled ? '<span style="color: #dc2626; font-weight: bold; margin-left: 10px;">ОТМЕНЕНО</span>' :
+                         isCompleted ? '<span style="color: #16a34a; font-weight: bold; margin-left: 10px;">ПРОВЕДЕНО</span>' :
+                         isSessionPassed && s.participants_count > 0 ? '<span style="color: #f59e0b; font-weight: bold; margin-left: 10px;">ОЖИДАЕТ ПОДТВЕРЖДЕНИЯ</span>' : ''}
+                    </div>
+                    <div class="workout-info">
+                        <p style="${isCancelled ? 'text-decoration: line-through;' : ''}"><i class="fas fa-map-marker-alt"></i> Зал: ${zoneName}</p>
+                        <p style="${isCancelled ? 'text-decoration: line-through;' : ''}"><i class="fas fa-users"></i> Записано: ${count}</p>
+                        ${user.role === 'trainer' && Array.isArray(s.participants) ? `
+                            <p style="margin-top:10px;"><strong>Клиенты:</strong></p>
+                            <div style="margin-top:6px;">
+                                ${s.participants.length ? s.participants.map(c => `<div style="padding:2px 0; ${isCancelled ? 'text-decoration: line-through;' : ''}">${c.first_name} ${c.last_name}</div>`).join('') : '<div style="padding:2px 0;">Пока никто не записался</div>'}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="workout-actions">
+                        ${isCancelled ? `
+                            <span style="color: #6b7280; font-style: italic;">Занятие отменено</span>
+                        ` : isCompleted ? `
+                            <span style="color: #16a34a; font-style: italic;">Занятие проведено</span>
+                        ` : user.role === 'client' ? `
+                            <button onclick="signupSession('${s.id}')" class="btn btn-primary btn-sm" ${s.is_signed ? 'disabled' : ''}>
+                                <i class="fas fa-calendar-plus"></i> ${s.is_signed ? 'Вы записаны' : 'Записаться'}
+                            </button>
+                        ` : user.role === 'trainer' ? `
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button onclick="cancelSession('${s.id}')" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Отменить занятие
+                                </button>
+                                ${!isCompleted && s.participants_count > 0 ? `
+                                    <button onclick="completeSession('${s.id}')" class="btn btn-success btn-sm">
+                                        <i class="fas fa-check"></i> Занятие проведено
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
+            });
+            
+            scheduleGrid.innerHTML = html;
+        }
+
+        async function signupSession(sessionId) {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            try {
+                const response = await fetch(`/api/schedule/${sessionId}/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok || response.status === 201) {
+                    showToast('Вы записались');
+                    await loadSchedule();
+                } else {
+                    const err = await response.json();
+                    showToast(err.detail || 'Не удалось записаться', true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка при записи', true);
+            }
+        }
+
+        async function cancelSession(sessionId) {
+            if (!confirm('Вы уверены, что хотите отменить это занятие? Все записавшиеся клиенты будут уведомлены.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`/api/schedule/${sessionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    showToast('Занятие отменено');
+                    await loadSchedule();
+                } else {
+                    const err = await response.json();
+                    showToast(err.detail || 'Не удалось отменить занятие', true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка при отмене занятия', true);
+            }
+        }
+
+        async function completeSession(sessionId) {
+            if (!confirm('Отметить занятие как проведенное? У всех записавшихся клиентов будут списаны занятия из абонементов.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`/api/schedule/${sessionId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    showToast(result.message || 'Занятие отмечено как проведенное');
+                    // Небольшая задержка перед обновлением, чтобы база данных успела обновиться
+                    setTimeout(async () => {
+                        await loadSchedule();
+                        // Не дергаем абонементы для тренера (иначе получаем 403 на /api/passes/me)
+                    }, 500);
+                } else {
+                    const err = await response.json();
+                    showToast(err.detail || 'Не удалось отметить занятие как проведенное', true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка при отметке занятия', true);
+            }
+        }
+
+        function openTrainerCreate() {
+            const panel = document.getElementById('trainerCreatePanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+
+            const dateInput = document.getElementById('scheduleDate');
+            const tDate = document.getElementById('trainerSessionDate');
+            if (dateInput && tDate) tDate.value = dateInput.value || new Date().toISOString().split('T')[0];
+
+            // копируем список залов в селект тренера
+            const src = document.getElementById('scheduleLocation');
+            const dst = document.getElementById('trainerZoneSelect');
+            if (src && dst) {
+                dst.innerHTML = '<option value="">Выберите зал</option>';
+                Array.from(src.options).forEach(opt => {
+                    if (opt.value) {
+                        const o = document.createElement('option');
+                        o.value = opt.value;
+                        o.textContent = opt.textContent;
+                        dst.appendChild(o);
+                    }
+                });
+            }
+        }
+
+        function closeTrainerCreate() {
+            const panel = document.getElementById('trainerCreatePanel');
+            if (panel) panel.style.display = 'none';
+        }
+
+        async function createTrainerSession() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+
+            const d = document.getElementById('trainerSessionDate')?.value;
+            const st = document.getElementById('trainerStartTime')?.value;
+            const et = document.getElementById('trainerEndTime')?.value;
+            const zid = document.getElementById('trainerZoneSelect')?.value;
+
+            if (!d || !st || !et || !zid) {
+                showToast('Заполните дату, время и зал', true);
+                return;
+            }
+            if (!isValidDateString(d)) {
+                showToast('Дата должна быть в формате YYYY-MM-DD', true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_date: d,
+                        start_time: st,
+                        end_time: et,
+                        gym_zone_id: parseInt(zid)
+                    })
+                });
+                if (response.ok || response.status === 201) {
+                    showToast('Запись создана');
+                    closeTrainerCreate();
+                    await loadSchedule();
+                } else {
+                    const err = await response.json();
+                    showToast(err.detail || 'Не удалось создать', true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка при создании записи', true);
+            }
+        }
+        
+        
+        async function loadZones() {
+            const token = localStorage.getItem('access_token');
+            const locationSelect = document.getElementById('scheduleLocation');
+            if (!locationSelect) return;
+            
+            try {
+                const response = await fetch('/api/zones', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const zones = await response.json();
+                    locationSelect.innerHTML = '<option value="">Все залы</option>';
+                    zones.forEach(zone => {
+                        locationSelect.innerHTML += `<option value="${zone.id}">${zone.name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке залов:', error);
+            }
+        }
+        // календарь инициализируется в /static/js/datepicker.js
+    </script>
+</body>
+</html>
+

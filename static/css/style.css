@@ -1,0 +1,488 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.main-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.hero h2 {
+    font-size: 2.2rem;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 30px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+.features {
+    margin-top: 50px;
+}
+
+.features h3 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: #2d3748;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.feature-card {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid #e2e8f0;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: #4f46e5;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: #4f46e5;
+    margin-bottom: 15px;
+}
+
+.feature-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+.feature-card p {
+    color: #718096;
+    font-size: 0.95rem;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    color: white;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: #2d3748;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content input,
+.modal-content select {
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2d3748;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-container input {
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.login-container input:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+}
+
+.sidebar {
+    background: #2d3748;
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.user-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    background: #4f46e5;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-item {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: #4f46e5;
+}
+
+.dashboard-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.profile-info p {
+    margin: 10px 0;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.subscription-card {
+    background: #f0f9ff;
+    border: 2px solid #0ea5e9;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.subscription-card h3 {
+    color: #0369a1;
+    margin-bottom: 15px;
+}
+
+.visit-card {
+    background: #f8fafc;
+    border-left: 4px solid #4f46e5;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.visit-time {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.visit-method {
+    display: inline-block;
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.visit-method.card {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.visit-method.manual {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.schedule-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.schedule-controls input,
+.schedule-controls select {
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.workout-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.workout-card:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+}
+
+.workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.workout-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+}
+
+.workout-time {
+    background: #4f46e5;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.workout-info {
+    margin-bottom: 15px;
+}
+
+.workout-info p {
+    margin: 5px 0;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.workout-info i {
+    color: #4f46e5;
+    width: 16px;
+}
+
+.workout-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+.no-data {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    padding: 40px;
+    grid-column: 1 / -1;
+}
+
+.trainer-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.trainer-workout {
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #4f46e5;
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-buttons {
+        flex-direction: column;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+}
+
